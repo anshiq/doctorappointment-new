@@ -10,7 +10,7 @@ const getAllAppointments = async (req, res) => {
         res.status(500).send({ err: error })
     }
 }
-const getDoctorAppointments = async (req, res) => {
+const getDoctorAppointments = async (req, res) => { // on going appointment of this doctor
     try {
         const data = await AppointmentSchema.find({
             appointedDoctorId: req.headers.doctorId,

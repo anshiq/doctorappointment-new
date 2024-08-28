@@ -1,16 +1,16 @@
-
-const { User } = require("../models/userSchema");
-const  {
+const { PatientSchema } = require("../../model/patientModel");
+const User = PatientSchema;
+const {
   comparePassword,
   createJwt,
   generateVerificationToken,
   hashPassword,
   sendVerificationEmail,
-} = require('../../Others/AuthFuntions');
+} = require("../../Others/AuthFuntions");
 async function signupUser(req, res) {
   try {
-    const { name, email, password, mobile,specialization } = req.body;
-    if (!name || !email || !password || !mobile) {
+    const { name, email, password, mobile, dob, gender, age } = req.body;
+    if (!name || !email || !password || !mobile || !dob || !gender || !age) {
       return res
         .status(400)
         .json({ success: false, error: "All fields are required." });
@@ -29,6 +29,9 @@ async function signupUser(req, res) {
       mobile,
       verifyToken: token,
       verified: false,
+      age: age,
+      dob: dob,
+      gender: gender,
     });
     if (data) {
       const verificationLink = `${process.env.weburl}/user/verify-email?token=${token}`;
@@ -55,7 +58,7 @@ async function loginUser(req, res) {
     if (data) {
       const isUser = await comparePassword(password, data.password);
       if (isUser) {
-        const token = createJwt(data._id.toString());
+        const token = createJwt(data._id.toString(), "patient");
         res.json({
           success: true,
           data: { token: token, msg: "Login Successfully !!!" },
@@ -109,8 +112,6 @@ async function verifyForgotPasswordToken(req, res) {
     const hashedpassword = await hashPassword(password);
     const data = await User.findOne({ verifyToken: token });
     if (data) {
-      console.log(data.password);
-      console.log(hashedpassword);
       data.verifyToken = undefined;
       data.verified = true;
       data.password = hashedpassword;
@@ -156,7 +157,7 @@ async function forgotPassword(req, res) {
     console.log(error);
   }
 }
-export {
+module.exports = {
   signupUser,
   forgotPassword,
   loginUser,

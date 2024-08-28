@@ -1,16 +1,32 @@
-
-const { User } = require("../models/userSchema");
-const  {
+const { DoctorSchema } = require("../../model/doctorModel");
+const User = DoctorSchema;
+const {
   comparePassword,
   createJwt,
   generateVerificationToken,
   hashPassword,
   sendVerificationEmail,
-} = require('../../Others/AuthFuntions');
+} = require("../../Others/AuthFuntions");
 async function signupUser(req, res) {
   try {
-    const { name, email, password, mobile } = req.body;
-    if (!name || !email || !password || !mobile) {
+    const {
+      name,
+      email,
+      password,
+      mobile,
+      specialization,
+      gender,
+      experience,
+    } = req.body;
+    if (
+      !name ||
+      !email ||
+      !password ||
+      !mobile ||
+      !specialization ||
+      !gender ||
+      !experience
+    ) {
       return res
         .status(400)
         .json({ success: false, error: "All fields are required." });
@@ -29,6 +45,9 @@ async function signupUser(req, res) {
       mobile,
       verifyToken: token,
       verified: false,
+      specialization: specialization,
+      experience: experience,
+      gender: gender,
     });
     if (data) {
       const verificationLink = `${process.env.weburl}/user/verify-email?token=${token}`;
@@ -55,7 +74,7 @@ async function loginUser(req, res) {
     if (data) {
       const isUser = await comparePassword(password, data.password);
       if (isUser) {
-        const token = createJwt(data._id.toString());
+        const token = createJwt(data._id.toString(),"doctor");
         res.json({
           success: true,
           data: { token: token, msg: "Login Successfully !!!" },
@@ -156,7 +175,7 @@ async function forgotPassword(req, res) {
     console.log(error);
   }
 }
-export {
+module.exports =  {
   signupUser,
   forgotPassword,
   loginUser,

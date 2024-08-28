@@ -1,7 +1,7 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
-import crypto from "crypto";
+const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
+const nodemailer = require("nodemailer")
+const crypto = require("crypto")
 const saltRounds = parseInt(process.env.SALTROUNDS, 10) || 10;
 const jwtSecret = "secret";
 const transporter = nodemailer.createTransport({
@@ -33,9 +33,9 @@ const comparePassword = async (password, hashedPassword) => {
     throw err;
   }
 };
-const createJwt = (id) => {
+const createJwt = (id,type) => { // id and type = doctor or patient
   const token = jwt.sign(
-    { _id: id },
+    { _id: id,type :type },
     jwtSecret,
     //    {
     //   expiresIn: "24h",
@@ -59,7 +59,7 @@ const sendVerificationEmail = ( mailOptionsObject) => {
 const generateVerificationToken = () => {
   return crypto.randomBytes(32).toString("hex");
 };
-export {
+module.exports=  {
   generateVerificationToken,
   hashPassword,
   comparePassword,

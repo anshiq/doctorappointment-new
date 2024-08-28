@@ -6,7 +6,8 @@ const appointmentSchema = new mongoose.Schema({
   presentDoctorIds: [{ type: String, unique: true }], // or [{ type: mongoose.Schema.Types.ObjectId, ref: 'Doctor', unique: true }]
   appointedDoctorId: String,
   problem: String,
-  time: String
+  time: String,
+  reviewed :Boolean
 })
 
 const AppointmentSchema = mongoose.model("Appointment", appointmentSchema); // changed from "users" to "Appointment"
