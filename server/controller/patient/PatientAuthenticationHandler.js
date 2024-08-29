@@ -29,7 +29,7 @@ async function signupUser(req, res) {
       mobile,
       verifyToken: token,
       verified: false,
-      age: age,
+      age: parseInt(age),
       dob: dob,
       gender: gender,
     });
@@ -58,6 +58,9 @@ async function loginUser(req, res) {
     if (data) {
       const isUser = await comparePassword(password, data.password);
       if (isUser) {
+        if(data.verified==false){
+          return res.status(500).json({message:"User not verified"})
+        }
         const token = createJwt(data._id.toString(), "patient");
         res.json({
           success: true,

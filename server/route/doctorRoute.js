@@ -2,7 +2,7 @@ const { getAllAppointments, getDoctorAppointments, addPresentDoctor } = require(
 const { loginUser, signupUser, forgotPassword, verifyEmailToken, verifyForgotPasswordToken } = require('../controller/doctor/DoctorAuthenticationHandler')
 
 const DoctorRouter = require('express').Router() // jwt required to accesss
-DoctorRouter.get('/add-present-doctor', addPresentDoctor) //first response to a patients appointment that i am available for your problem
+DoctorRouter.post('/add-present-doctor', addPresentDoctor) //first response to a patients appointment that i am available for your problem
 DoctorRouter.get('/get-all-appointments', getAllAppointments)
 DoctorRouter.get('/get-my-appointments', getDoctorAppointments) // on going appointment of this doctor
 

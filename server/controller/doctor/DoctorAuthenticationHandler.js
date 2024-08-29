@@ -46,7 +46,7 @@ async function signupUser(req, res) {
       verifyToken: token,
       verified: false,
       specialization: specialization,
-      experience: experience,
+      experience: parseInt(experience),
       gender: gender,
     });
     if (data) {
@@ -71,14 +71,19 @@ async function loginUser(req, res) {
   try {
     const { email, password } = req.body;
     const data = await User.findOne({ email: email });
+
     if (data) {
       const isUser = await comparePassword(password, data.password);
       if (isUser) {
+        if(data.verified==false){
+          return res.status(500).json({message:"User not verified"})
+        }
         const token = createJwt(data._id.toString(),"doctor");
         res.json({
           success: true,
           data: { token: token, msg: "Login Successfully !!!" },
         });
+
       } else {
         res.json({ success: false, data: { msg: "Wrong Credentials" } });
       }

@@ -4,8 +4,8 @@ const PatientRoute = require('express').Router() // jwt require
 const PatientAuthRoute = require('express').Router() // not jwt
 PatientRoute.post('/create-appointment',createAppointment )
 PatientRoute.route('/get-patient-appointments').get(getPatientAppointments)
-PatientRoute.route('/accept-your-doctor',acceptYourDoctorForTreatment)
-PatientRoute.route('/review-doctor',reviewDoctor)
+PatientRoute.route('/accept-your-doctor').post(acceptYourDoctorForTreatment);
+PatientRoute.route('/review-doctor').post(reviewDoctor)
 
 PatientAuthRoute.route('/login').post(loginUser)
 PatientAuthRoute.route('/signup').post(signupUser)

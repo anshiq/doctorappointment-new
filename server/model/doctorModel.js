@@ -34,5 +34,5 @@ const doctorSchema = new mongoose.Schema({
   rating: [ratingSchema]
 })
 
-const DoctorSchema = mongoose.model("users", doctorSchema);
+const DoctorSchema = mongoose.model("doctor", doctorSchema);
 module.exports = { DoctorSchema }
