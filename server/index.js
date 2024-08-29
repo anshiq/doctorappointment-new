@@ -6,6 +6,7 @@ const { PatientRoute, PatientAuthRoute } = require("./route/patientRoute");
 const {
   verifyPatientToken,
   verifyDoctorToken,
+  getTokenType,
 } = require("./middleware/jwtparser");
 const { connect } = require("./db/connect");
 const app = express();
@@ -16,6 +17,7 @@ app.use("/doctor-auth", DoctorAuthRouter); // login signup etc
 app.use("/doctor-appointment", verifyDoctorToken, DoctorRouter);
 app.use("/patient-auth", PatientAuthRoute); // login signup etc
 app.use("/patient-appointment",verifyPatientToken, PatientRoute);
+app.get('/get-token-type',getTokenType)
 const start = async () => {
   try {
     const db_url = process.env.mongod_url;
