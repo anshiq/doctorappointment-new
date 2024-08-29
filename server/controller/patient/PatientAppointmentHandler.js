@@ -1,6 +1,23 @@
 const { AppointmentSchema } = require("../../model/appointmentModel");
 const { DoctorSchema } = require("../../model/doctorModel");
-
+const createAppointment = async (req, res) => {
+  try {
+    const { problem, time } = req.body;
+    const userId = req.userId;
+    const data = await AppointmentSchema.create({
+      patientId: userId,
+      time: time,
+      problem: problem,
+      progress: "toaccept",
+      reviewed: false,
+      appointedDoctorId: undefined,
+      presentDoctorIds: [],
+    });
+    res.send(data);
+  } catch (e) {
+    res.status(500).send("error while creaating appoiintment");
+  }
+};
 const getPatientAppointments = async (req, res) => {
   const userId = req.userId;
   try {
@@ -56,4 +73,5 @@ module.exports = {
   getPatientAppointments,
   reviewDoctor,
   acceptYourDoctorForTreatment,
+  createAppointment
 };
