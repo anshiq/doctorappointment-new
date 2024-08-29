@@ -13,7 +13,7 @@ const getAllAppointments = async (req, res) => {
 const getDoctorAppointments = async (req, res) => { // on going appointment of this doctor
     try {
         const data = await AppointmentSchema.find({
-            appointedDoctorId: req.headers.doctorId,
+            appointedDoctorId: req.userId,
             progress: "ongoing"
         })
         res.send(data);
@@ -22,7 +22,8 @@ const getDoctorAppointments = async (req, res) => { // on going appointment of t
     }
 }
 const addPresentDoctor = async (req, res) => {
-    const { doctorId, appointmentId } = req.body;
+    const {  appointmentId } = req.body;
+    const doctorId = req.userId
     try {
         const data = await AppointmentSchema.findById(appointmentId);
         if (!data.presentDoctorIds.includes(doctorId)) {
