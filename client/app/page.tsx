@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
-
+import { axiosFetch } from "@/lib/axiosConfig";
+import { error } from "console";
+import { useRouter } from "next/navigation"; 
 export default function Home() {
   const [formType, setFormType] = useState<"patient" | "doctor">("patient")
   const [action, setAction] = useState<"login" | "signup">("login")
@@ -52,16 +54,30 @@ export default function Home() {
 
 const PatientLogin = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
-
+  const router=useRouter();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault();
     console.log('Patient Login:', formData);
-    // Add your login logic here
+    try{
+      e.preventDefault();
+      console.log('Patient Signup:', formData);
+      const res=await axiosFetch.post("/patient-auth/login",formData);
+      if(res.status==200){
+        console.log(res.data.data.token);
+        localStorage.setItem("token",res.data.data.token);
+        console.log("Logged in Succesfully");
+        alert('Logged in Sucessfully')      
+        router.push("/patient/profile");
+      }
+    }catch(err){
+      alert("Login in failed")
+     console.log(err);
   };
+}
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -107,10 +123,19 @@ const PatientSignup = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Patient Signup:', formData);
-    // Add your signup logic here
+  const handleSubmit = async(e: React.FormEvent) => {
+    try{
+      e.preventDefault();
+      console.log('Patient Signup:', formData);
+      const res=await axiosFetch.post("/patient-auth/signup",formData);
+      if(res.status==200){
+        console.log("Signed in Succesfully");
+        alert('Patient Signed up Sucessfully')        
+      }
+    }catch(err){
+      alert("Sign up failed")
+  console.log(err);
+  }
   };
 
   return (
@@ -168,10 +193,32 @@ const DoctorSignup = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Doctor Signup:', formData);
-    // Add your signup logic here
+    try {
+ 
+      const response:any = await axiosFetch.post('/doctor-auth/signup', { formData });
+      console.log(response);
+      
+      
+      if (response.data.success) {
+        const token = response.data.data.token;
+  
+        localStorage.setItem("token", token);
+  
+        if (localStorage.getItem("token")) {
+          console.log("Token:", localStorage.getItem("token"));
+          alert("Doctor Signed in Successfully");
+        } else {
+          alert("Failed to store token.");
+        }
+      } else {
+        alert("Invalid Credentials");
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+      alert("An error occurred during login.");
+    }
   };
 
   return (
@@ -216,15 +263,38 @@ const DoctorSignup = () => {
 
 const DoctorSignin = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
-
+  const navigate=useRouter();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  
+  const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Doctor Login:', formData);
-    // Add your login logic here
+    try {   
+      const response:any = await axiosFetch.post('/doctor-auth/login', { formData });
+      console.log(response);
+      
+      
+      if (response.data.success) {
+        const token = response.data.data.token;
+  
+        localStorage.setItem("token", token);
+  
+        if (localStorage.getItem("token")) {
+          console.log("Token:", localStorage.getItem("token"));
+          alert("Doctor Signed in Successfully");
+          navigate.push("/doctor/profile");
+        } else {
+          alert("Failed to store token.");
+        }
+      } else {
+        alert("Invalid Credentials");
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+      alert("An error occurred during login.");
+    }
+  
   };
 
   return (

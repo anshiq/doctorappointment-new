@@ -17,8 +17,8 @@ const Wrapper = ({ children }: any) => {
           if (data.status === 200) {
             setLoading(false);
             setTimeout(() => {
-              // redirection according to token type (doctor , patient)
-              if (data.data === "patient") {
+              // redirection according to token type (doctor , patient)              
+              if (data.data.type === "patient") {
                 router.push("/patient");
               } else {
                 router.push("/doctor");

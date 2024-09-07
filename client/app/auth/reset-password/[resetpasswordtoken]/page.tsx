@@ -1,17 +1,23 @@
 "use client";
 
+import { axiosFetch } from "@/lib/axiosConfig";
 import { useEffect, useState } from "react";
-
+import { useRouter } from "next/navigation";
 const VerifyToken = (params: any) => {
     const [password, setPassword] = useState("");
     const [retypepassword, setRetypePassword] = useState('')
     const token = params.resetpasswordtoken;
-    const handleSubmit = (e:any) => {
+    const navigate=useRouter();
+    const handleSubmit = async(e:any) => {
         e.preventDefault();
         if (password !== retypepassword) {
             alert("passwrd don't match")
-            return
+            return;
         }
+        await axiosFetch.post("/doctor-auth/verify-forgot-password-token").then(()=>{
+            alert("Password has been updated Succesfully");
+            navigate.push("/");
+        })
     }
     return <>
         <div className="min-h-screen bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center p-4">
