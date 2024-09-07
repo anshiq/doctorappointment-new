@@ -3,7 +3,6 @@ const axiosFetch = axios.create({
   baseURL: process.env.backendUrl,
   // baseURL: "http://localhost:8080/user",
   // baseURL: "http://localhost:8080",
-  timeout: 8000,
 });
 
 const axiosFetchType = (token: string) =>
@@ -15,14 +14,14 @@ const axiosFetchType = (token: string) =>
   });
   const axiosFetchDoctor = (token: string) =>
     axios.create({
-      baseURL: process.env.backendUrl + "/doctor",
+      baseURL: process.env.backendUrl + "/doctor-appointment",
       headers: {
         Authorization: `${token}`,
       },
     });
     const axiosFetchPatient = (token: string) =>
         axios.create({
-          baseURL: process.env.backendUrl + "/patient",
+          baseURL: process.env.backendUrl + "/patient-appointment",
           headers: {
             Authorization: `${token}`,
           },

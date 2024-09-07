@@ -27,5 +27,5 @@ const patientSchema  = new mongoose.Schema({
     dob:String,
     gender:String,
 })
-const PatientSchema = model("users", patientSchema);
+const PatientSchema = mongoose.model("patient", patientSchema);
 module.exports={PatientSchema}
