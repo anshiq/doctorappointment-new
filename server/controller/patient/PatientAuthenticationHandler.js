@@ -17,7 +17,7 @@ async function signupUser(req, res) {
     }
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      res.json({ success: false, data: { msg: "User already Exist..." } });
+      res.status(500).json({ success: false, data: { msg: "User already Exist..." } });
       return;
     }
     const hashedpassword = await hashPassword(password);
@@ -29,12 +29,12 @@ async function signupUser(req, res) {
       mobile,
       verifyToken: token,
       verified: false,
-      age: age,
+      age: parseInt(age),
       dob: dob,
       gender: gender,
     });
     if (data) {
-      const verificationLink = `${process.env.weburl}/user/verify-email?token=${token}`;
+      const verificationLink = `http://localhost:3000/auth/signupverification/${token}?type=Patient`;
       const mailoptions = {
         to: data.email,
         subject: "Email Verification",
@@ -58,16 +58,19 @@ async function loginUser(req, res) {
     if (data) {
       const isUser = await comparePassword(password, data.password);
       if (isUser) {
+        if(data.verified==false){
+          return res.status(500).json({message:"User not verified"})
+        }
         const token = createJwt(data._id.toString(), "patient");
         res.json({
           success: true,
           data: { token: token, msg: "Login Successfully !!!" },
         });
       } else {
-        res.json({ success: false, data: { msg: "Wrong Credentials" } });
+        res.status(500).json({ success: false, data: { msg: "Wrong  Password" } });
       }
     } else {
-      res.json({ success: false, data: { msg: "Wrong Credentials" } });
+      res.status(500).json({ success: false, data: { msg: "Wrong Credentials" } });
     }
   } catch (error) {
     res.json({
@@ -85,7 +88,7 @@ const verifyEmailToken = async (req, res) => {
   try {
     const user = await User.findOne({ verifyToken: token });
     if (!user) {
-      return res.status(200).json({
+      return res.status(400).json({
         success: true,
         data: { msg: "User not found or already verified." },
       });
@@ -123,10 +126,11 @@ async function verifyForgotPasswordToken(req, res) {
     }
   } catch (error) {
     console.log(error);
-    res.json({ success: false });
+    res.status(500).json({ success: false });
   }
 }
 async function forgotPassword(req, res) {
+  console.log("1");
   try {
     const email = req.body.email;
     const user = await User.findOne({ email: email });
@@ -141,6 +145,8 @@ async function forgotPassword(req, res) {
         subject: "Reset password",
         text: `Please click the following link to Reset Password: ${verificationLink}`,
       };
+    
+      
       sendVerificationEmail(mailoptions);
       res.json({
         success: true,
@@ -150,7 +156,7 @@ async function forgotPassword(req, res) {
       });
     }
   } catch (error) {
-    res.json({
+    res.status(500).json({
       success: false,
       data: { msg: JSON.stringify({ error: error }) },
     });

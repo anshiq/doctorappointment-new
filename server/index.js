@@ -17,10 +17,12 @@ app.use("/doctor-auth", DoctorAuthRouter); // login signup etc
 app.use("/doctor-appointment", verifyDoctorToken, DoctorRouter);
 app.use("/patient-auth", PatientAuthRoute); // login signup etc
 app.use("/patient-appointment",verifyPatientToken, PatientRoute);
+const wsRouter = express.Router();
+
 app.get('/get-token-type',getTokenType)
 const start = async () => {
   try {
-    const db_url = process.env.mongod_url;
+    const db_url ="mongodb+srv://appuravjaat370:Appuravnehra123@nodeproject.ejkzvbv.mongodb.net/?retryWrites=true&w=majority&appName=Nodeproject";
     const port = process.env.PORT || 8080;
     connect(db_url);
     app.listen(port, () =>

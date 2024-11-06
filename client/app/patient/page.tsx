@@ -1,5 +1,6 @@
 'use client'
+import Logout from "./components/Logout"
 function Page (){
-return <>dkdkk</>
+return <><Logout/></>
 }
 export default Page

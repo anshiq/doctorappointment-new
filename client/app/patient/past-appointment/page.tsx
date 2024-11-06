@@ -2,9 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock } from 'lucide-react';
 import { axiosFetchPatient } from '@/lib/axiosConfig';
-import Link  from 'next/link';
 
-export default function OngoingAppointmentsPage() {
+export default function PastAppointmentsPage() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,21 +15,14 @@ export default function OngoingAppointmentsPage() {
   const fetchAppointments = async () => {
     try {
       const token:any = localStorage.getItem('token');
-      axiosFetchPatient(token).get('/get-patient-appointments')
-        .then((response) => {
-          console.log(response.data);
-          const data = response.data;
-          setAppointments(data);
-          setLoading(false);
-        })
-        .catch((error) => {
-          setError(error.message);
-          setLoading(false);
-          console.log(error);
-        });
+      const response = await axiosFetchPatient(token).get('/past-appointments'); 
+      console.log(response.data);
+      setAppointments(response.data);
+      setLoading(false);
     } catch (err) {
       setError(err.message);
       setLoading(false);
+      console.log(err);
     }
   };
 
@@ -44,9 +36,9 @@ export default function OngoingAppointmentsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">Ongoing Appointments</h1>
+      <h1 className="text-3xl font-bold mb-6 text-gray-800">Past Appointments</h1>
       {appointments.length === 0 ? (
-        <p className="text-gray-600">No ongoing appointments found.</p>
+        <p className="text-gray-600">No past appointments found.</p>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {appointments.map((appointment) => (
@@ -63,11 +55,8 @@ export default function OngoingAppointmentsPage() {
                 <Clock className="mr-2 h-5 w-5" />
                 <span>{new Date(appointment.time).toLocaleTimeString()}</span>
               </div>
-              <div className='flex flex-row justify-between'>
-              <div className={`bg-${appointment.progress === 'ongoing' ? 'green' : 'yellow'}-100 text-${appointment.progress === 'ongoing' ? 'green' : 'yellow'}-800 px-3 py-1 rounded-full text-sm font-medium inline-block flex flex-row`}>
+              <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium inline-block">
                 {appointment.progress}
-              </div>
-              <Link className='bg-white ' href={"/chat/"+appointment._id}>Chat</Link>
               </div>
             </div>
           ))}
