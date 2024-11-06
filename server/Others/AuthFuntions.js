@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
   secure: true,
   auth: {
     user: "anshikthind@gmail.com",
-    pass: "pnff bbip tzwr kinx",
+    pass: "itlu ogbn vllq wpdr",
   },
 });
 const hashPassword = async (password) => {

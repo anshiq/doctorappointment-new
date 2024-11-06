@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock } from 'lucide-react';
 import { axiosFetchPatient } from '@/lib/axiosConfig';
+import Link  from 'next/link';
 
 export default function OngoingAppointmentsPage() {
   const [appointments, setAppointments] = useState([]);
@@ -62,8 +63,11 @@ export default function OngoingAppointmentsPage() {
                 <Clock className="mr-2 h-5 w-5" />
                 <span>{new Date(appointment.time).toLocaleTimeString()}</span>
               </div>
-              <div className={`bg-${appointment.progress === 'ongoing' ? 'green' : 'yellow'}-100 text-${appointment.progress === 'ongoing' ? 'green' : 'yellow'}-800 px-3 py-1 rounded-full text-sm font-medium inline-block`}>
+              <div className='flex flex-row justify-between'>
+              <div className={`bg-${appointment.progress === 'ongoing' ? 'green' : 'yellow'}-100 text-${appointment.progress === 'ongoing' ? 'green' : 'yellow'}-800 px-3 py-1 rounded-full text-sm font-medium inline-block flex flex-row`}>
                 {appointment.progress}
+              </div>
+              <Link className='bg-white ' href={"/chat/"+appointment._id}>Chat</Link>
               </div>
             </div>
           ))}

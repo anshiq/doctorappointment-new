@@ -130,6 +130,7 @@ async function verifyForgotPasswordToken(req, res) {
   }
 }
 async function forgotPassword(req, res) {
+  console.log("1");
   try {
     const email = req.body.email;
     const user = await User.findOne({ email: email });
@@ -144,6 +145,8 @@ async function forgotPassword(req, res) {
         subject: "Reset password",
         text: `Please click the following link to Reset Password: ${verificationLink}`,
       };
+    
+      
       sendVerificationEmail(mailoptions);
       res.json({
         success: true,
