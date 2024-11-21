@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const wsExpress = require('express-ws')
 const { DoctorRouter, DoctorAuthRouter } = require("./route/doctorRoute");
 const { PatientRoute, PatientAuthRoute } = require("./route/patientRoute");
 const {
@@ -17,8 +18,10 @@ app.use("/doctor-auth", DoctorAuthRouter); // login signup etc
 app.use("/doctor-appointment", verifyDoctorToken, DoctorRouter);
 app.use("/patient-auth", PatientAuthRoute); // login signup etc
 app.use("/patient-appointment",verifyPatientToken, PatientRoute);
-const wsRouter = express.Router();
-
+wsExpress(app)
+const {  wsRouter,restRouter } = require("./route/chatRoute");
+app.use("/get-appointment-chats",restRouter)
+app.use('/ws-chat',wsRouter)
 app.get('/get-token-type',getTokenType)
 const start = async () => {
   try {

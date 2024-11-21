@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useState } from "react";
 import { axiosFetch } from "@/lib/axiosConfig";
-import { error } from "console";
 import { useRouter } from "next/navigation"; 
 export default function Home() {
   const [formType, setFormType] = useState<"patient" | "doctor">("patient")

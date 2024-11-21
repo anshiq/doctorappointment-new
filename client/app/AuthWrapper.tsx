@@ -16,14 +16,14 @@ const Wrapper = ({ children }: any) => {
         .then((data) => {
           if (data.status === 200) {
             setLoading(false);
-            setTimeout(() => {
-              // redirection according to token type (doctor , patient)              
+            
+              // redirection according to token type (doctor , patient)  
+              if (path !=="/")  return          
               if (data.data.type === "patient") {
-                router.push("/patient");
+                router.push("/patient/profile");
               } else {
-                router.push("/doctor");
+                router.push("/doctor/profile");
               }
-            }, 100);
           }
         })
         .catch((e) => {
