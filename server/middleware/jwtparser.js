@@ -17,18 +17,25 @@ function verifyDoctorToken(req, res, next) {
   }
 }
 function verifyPatientToken(req, res, next) {
+  console.log("Hit middleware")
   const token = req.header("Authorization");
-  if (!token) return res.status(401).json({ error: "Access denied" });
+  if (!token) {
+    console.log("Hit middleware1")
+
+    return res.status(401).json({ error: "Access denied" });
+  }
   try {
     const decoded = jwt.verify(token, jwtSecret);
 
     req.userId = decoded._id;
     if (decoded.type === "patient") {
+      console.log("Hit middleware 2")
       next();
     } else {
       res.status(401).json({ error: "Invalid user type " });
     }
   } catch (error) {
+    console.error(error)
     res.status(401).json({ error: "Invalid token" });
   }
 }

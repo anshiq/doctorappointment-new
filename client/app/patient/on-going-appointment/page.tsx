@@ -49,10 +49,10 @@ export default function OngoingAppointmentsPage() {
         <p className="text-gray-600">No ongoing appointments found.</p>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {appointments.map((appointment) => (
+          {appointments.map((appointment:any) => (
             <div key={appointment._id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300">
               <h2 className="text-xl font-semibold mb-3 text-gray-800">
-                Doctor: {appointment.appointedDoctorId?.name || 'Not Assigned'}
+                Doctor: {appointment.appointedDoctorId || 'Not Assigned'}
               </h2>
               <p className="text-gray-800 mb-3">{appointment.problem}</p>
               <div className="flex items-center mb-2 text-gray-600">

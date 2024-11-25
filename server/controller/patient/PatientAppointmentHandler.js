@@ -1,4 +1,5 @@
 const { AppointmentSchema } = require("../../model/appointmentModel");
+const { Chat } = require("../../model/chatModel");
 const { DoctorSchema } = require("../../model/doctorModel");
 const { PatientSchema } = require("../../model/patientModel");
 const mongoose = require('mongoose');
