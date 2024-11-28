@@ -10,5 +10,5 @@ const appointmentSchema = new mongoose.Schema({
   reviewed :Boolean
 })
 
-const AppointmentSchema = mongoose.model("Appointment", appointmentSchema); // changed from "users" to "Appointment"
-module.exports = { AppointmentSchema }
+const AppointmentSchema = mongoose.model( "Appointment", appointmentSchema); // changed from "users" to "Appointment"
+module.exports = { AppointmentSchema } 
