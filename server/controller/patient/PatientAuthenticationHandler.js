@@ -95,7 +95,7 @@ const verifyEmailToken = async (req, res) => {
       });
     }
     user.verified = true;
-    user.verifyToken = undefined;
+   
     await user.save(); // Save the updated user record
     console.log(user);
     res.status(200).json({
@@ -120,7 +120,7 @@ async function verifyForgotPasswordToken(req, res) {
       return res.status(404).send("User not found or invalid token.");
     }
     if (data) {
-      data.verifyToken = undefined;
+      
       data.verified = true;
       data.password = hashedpassword;
       data.save();
@@ -136,16 +136,14 @@ async function verifyForgotPasswordToken(req, res) {
   }
 }
 async function forgotPassword(req, res) {
-  console.log("1");
   try {
     const email = req.body.email;
     const user = await User.findOne({ email: email });
     if (user) {
-      const token = generateVerificationToken();
-      user.verifyToken = token;
-      console.log(token);
+     const token=user.verifyToken;
+      console.log(token+"in patient");
       user.save();
-      const verificationLink = `${process.env.weburl}/user/reset-password?token=${token}`;
+      const verificationLink = `http://localhost:3000/auth/reset-password/reset?token=${token}&type=patient`;
       const mailoptions = {
         to: user.email,
         subject: "Reset password",

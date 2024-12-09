@@ -121,7 +121,6 @@ const verifyEmailToken = async (req, res) => {
       });
     }
     user.verified = true;
-    user.verifyToken = undefined;
     await user.save(); 
     console.log(user);
     res.status(200).json({
@@ -137,11 +136,11 @@ const verifyEmailToken = async (req, res) => {
 };
 async function verifyForgotPasswordToken(req, res) {
   try {
-    const { email, password } = req.body;
+    const { token, password } = req.body;
     const hashedpassword = await hashPassword(password);
-    console.log(email);
+    console.log(token);
     
-    const data = await User.findOne({ email: email});
+    const data = await User.findOne({ verifyToken: token});
     console.log("User data found:", data);
 
     if (!data) {
@@ -150,12 +149,9 @@ async function verifyForgotPasswordToken(req, res) {
     console.log(data);
     
     if (data) {
-      // console.log(data.password);
-      // console.log(hashedpassword);
-      data.verifyToken = undefined;
       data.verified = true;
       data.password = hashedpassword;
-      data.save();
+      await data.save();
       res.status(200).json({
         success: true,
         data: { msg: "password updated successfully" },
@@ -172,10 +168,9 @@ async function forgotPassword(req, res) {
     console.log(email);
     const user = await User.findOne({ email: email });    
     if (user) {
-      const token = generateVerificationToken();
-      user.verifyToken = token;
-      await user.save();
-      const verificationLink = `http://localhost:3000/auth/reset-password/${email}?type=Doctor`;
+      const token = user.verifyToken;
+      console.log(token);
+      const verificationLink = `http://localhost:3000/auth/reset-password?token=${token}&type=doctor`;
       const mailoptions = {
         to: user.email,
         subject: "Reset password",
