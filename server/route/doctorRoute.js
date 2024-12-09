@@ -1,4 +1,4 @@
-const { getAllAppointments, getDoctorAppointments, addPresentDoctor,getuserprofile ,updateAppointmentProgress} = require('../controller/doctor/DoctorAppointmentHandler')
+const { getAllAppointments, getDoctorAppointments, addPresentDoctor,getuserprofile ,updateAppointmentProgress,getreview} = require('../controller/doctor/DoctorAppointmentHandler')
 const { loginUser, signupUser, forgotPassword, verifyEmailToken, verifyForgotPasswordToken} = require('../controller/doctor/DoctorAuthenticationHandler')
 
 const DoctorRouter = require('express').Router() // jwt required to accesss
@@ -7,6 +7,7 @@ DoctorRouter.get('/get-all-appointments', getAllAppointments)
 DoctorRouter.get('/get-my-appointments', getDoctorAppointments) // on going appointment of this doctor
 DoctorRouter.route('/user-profile').get(getuserprofile);
 DoctorRouter.route('/update-appointment').post(updateAppointmentProgress);
+DoctorRouter.route("/get-my-reviews").get(getreview);
 
 
 

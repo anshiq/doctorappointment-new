@@ -68,7 +68,7 @@ export default function OngoingAppointmentsPage() {
               className="bg-white rounded-lg shadow-lg p-6 hover:shadow-2xl transition duration-300 transform hover:scale-105 border-t-4 border-green-500"
             >
               <h2 className="text-xl font-semibold mb-3 text-gray-700">
-                Doctor: {appointment.appointedDoctorId || "Not Assigned"}
+                Doctor: {appointment.doctorName || "Not Assigned"}
               </h2>
               <p className="text-gray-600 mb-4 font-medium">
                 {appointment.problem}

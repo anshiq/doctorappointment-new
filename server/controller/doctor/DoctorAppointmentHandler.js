@@ -24,21 +24,43 @@ const getAllAppointments = async (req, res) => {
 };
 const updateAppointmentProgress = async (req, res) => {
   try {
-    const { appointmentId } = req.body;
+    const { appointmentId,done,name } = req.body;
     console.log(appointmentId);
-
+ 
     if (!appointmentId) {
       return res
         .status(400)
         .json({ error: "Appointment ID and progress are required." });
     }
-
-    const updatedAppointment = await AppointmentSchema.findByIdAndUpdate(
-      appointmentId,
-      { progress: "ongoing" }
-    );
-    updatedAppointment.appointedDoctorId = req.userId;
-    await updatedAppointment.save();
+    let updatedAppointment
+    if(done==false){
+       updatedAppointment = await AppointmentSchema.findByIdAndUpdate(
+        appointmentId,
+        { progress: "ongoing" },
+        {new:true}
+      );
+    }
+    else{
+       updatedAppointment=await AppointmentSchema.findByIdAndUpdate(
+        appointmentId,
+          {progress:'done'},
+          {new:true}
+        
+      )
+      updatedAppointment.doctorname=name;
+      console.log(updateAppointmentProgress.doctorname+"!");
+      
+      await updatedAppointment.save();
+      if (!updatedAppointment) {
+        return res.status(404).json({ error: "Appointment not found." });
+      }
+      // No further actions needed after deletion, send response
+      return res.status(200).json({ message: "Appointment deleted successfully." });
+    }
+    if (updatedAppointment) {
+      updatedAppointment.appointedDoctorId = req.userId;
+      await updatedAppointment.save();
+    }
     if (!updatedAppointment) {
       return res.status(404).json({ error: "Appointment not found." });
     }
@@ -48,7 +70,7 @@ const updateAppointmentProgress = async (req, res) => {
     console.error(err);
     res.status(500).json({ error: "Error updating appointment progress." });
   }
-};
+}
 const getDoctorAppointments = async (req, res) => {
   // on going appointment of this doctor
   try {
@@ -56,7 +78,10 @@ const getDoctorAppointments = async (req, res) => {
       appointedDoctorId: req.userId,
       progress: "ongoing",
     });
+    console.log(data);
+    
     res.send(data);
+
   } catch (error) {
     res.status(500).send({ err: error });
   }
@@ -89,10 +114,43 @@ const getuserprofile = async (req, res) => {
     console.log(err);
   }
 };
+const getreview=async(req,res)=>{
+  const userId = req.userId;
+
+try {
+ 
+  const data = await User.findById(userId);
+  if (!data) {
+    return res.status(404).send("Doctor not found.");
+  }
+
+  const appointmentIds = data.rating.map((rev) => rev.appointmentId);
+
+  const appointments = await AppointmentSchema.find({
+    _id: { $in: appointmentIds },
+  });
+
+  const enrichedRatings = data.rating.map((rev) => {
+    const appointment = appointments.find(
+      (app) => app._id.toString() === rev.appointmentId
+    );
+    return {
+      ...rev._doc, 
+      problem: appointment ? appointment.problem : "No problem description",
+    };
+  });
+
+  res.status(200).send(enrichedRatings);
+} catch (err) {
+  console.error(err);
+  res.status(500).send("Server error.");
+}
+}
 module.exports = {
   getAllAppointments,
   addPresentDoctor,
   getDoctorAppointments,
   getuserprofile,
   updateAppointmentProgress,
+  getreview
 };

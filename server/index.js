@@ -13,6 +13,8 @@ const { connect } = require("./db/connect");
 const app = express();
 dotenv.config();
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use(cors());
 app.use("/doctor-auth", DoctorAuthRouter); // login signup etc
 app.use("/doctor-appointment", verifyDoctorToken, DoctorRouter);

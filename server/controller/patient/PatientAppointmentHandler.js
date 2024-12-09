@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 const User = PatientSchema;
 const createAppointment = async (req, res) => {
   try {
-    const { problem, time } = req.body;
+    const { problem, time ,patientname} = req.body;
     const userId = req.userId;
     const data = await AppointmentSchema.create({
       patientId: userId,
@@ -17,6 +17,9 @@ const createAppointment = async (req, res) => {
       reviewed: false,
       appointedDoctorId:undefined,
       presentDoctorIds:[],
+      doctorname:"",
+      patientname:patientname
+     
     });
     res.send(data);
   } catch (e) {
@@ -90,31 +93,59 @@ const pastappointment=async(req,res)=>{
   }
 }
 const reviewDoctor = async (req, res) => {
-  const { rating, appointmentId } = req.body;
-  const userId = req.userId;
-  if (rating > 5) {
-    res.status(500).send("rating can't be more than 5 ");
-    return;
-  }
-  try {
-    const data = await AppointmentSchema.findById(appointmentId);
-    if (data.patientId !== userId)
-      return res
-        .status(500)
-        .send("this user is not allowed for this appointment ");
-    const review = {
-      appointmentId: data._id,
-      rate: rating,
-    };
-    const doctor = await DoctorSchema.findById(data.appointedDoctorId);
-    doctor.rating = [...doctor.rating, review];
-    await doctor.save();
-    data.reviewed = true;
-    await data.save();
-    res.send(data);
-  } catch (error) {
-    res.status(500).send({ err: error });
-  }
+  const { appointmentId, rating,message} = req.body;
+    const userId = req.userId;
+  
+    if (rating < 1 || rating > 5) {
+      return res.status(400).send("Rating must be between 1 and 5.");
+    }
+
+    try {
+      
+      const appointment = await AppointmentSchema.findById(appointmentId);
+      const patientname=appointment.patientname;
+      
+      if (!appointment) {
+        return res.status(404).send("Appointment not found.");
+      }
+
+      if (appointment.patientId.toString() !== userId) {
+        return res
+          .status(403)
+          .send("You are not authorized to review this appointment.");
+      }
+
+      if (appointment.reviewed) {
+        return res.status(400).send("This appointment has already been reviewed.");
+      }
+      
+      const doctor = await DoctorSchema.findById(appointment.appointedDoctorId);
+      if (!doctor) {
+        return res.status(404).send("Doctor not found.");
+      }
+
+      const newReview = {
+        appointmentId:appointmentId,
+        patientName:patientname,
+        rate: rating,
+        comment:message,
+      };
+
+      doctor.rating.push(newReview);
+      await doctor.save();
+      console.log(doctor);
+      
+      appointment.reviewed = true;
+      await appointment.save();
+
+      res.status(200).send({
+        message: "Review submitted successfully.",
+        doctor,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("An error occurred while submitting the review.");
+    }
 };
 const getuserprofile=async(req,res)=>{
   try{
