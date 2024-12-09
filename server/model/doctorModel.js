@@ -1,8 +1,9 @@
 const mongoose = require('mongoose')
 const ratingSchema = new mongoose.Schema({
   appointmentId: String,
-  rate: Number
-  
+  patientName:String,
+  rate: Number,
+  comment:String
 })
 const doctorSchema = new mongoose.Schema({
   name: {

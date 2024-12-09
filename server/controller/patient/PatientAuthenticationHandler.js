@@ -64,6 +64,7 @@ async function loginUser(req, res) {
         const token = createJwt(data._id.toString(), "patient");
         res.json({
           success: true,
+          name:data.name,
           data: { token: token, msg: "Login Successfully !!!" },
         });
       } else {
@@ -111,9 +112,13 @@ const verifyEmailToken = async (req, res) => {
 async function verifyForgotPasswordToken(req, res) {
   try {
     const { token, password } = req.body;
-    console.log(req.body);
+
     const hashedpassword = await hashPassword(password);
     const data = await User.findOne({ verifyToken: token });
+    console.log(data);
+    if (!data) {
+      return res.status(404).send("User not found or invalid token.");
+    }
     if (data) {
       data.verifyToken = undefined;
       data.verified = true;
@@ -124,6 +129,7 @@ async function verifyForgotPasswordToken(req, res) {
         data: { msg: "password updated successfully" },
       });
     }
+    
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false });

@@ -40,6 +40,7 @@ async function signupUser(req, res) {
     }
     const hashedpassword = await hashPassword(password);
     const token = generateVerificationToken();
+   console.log(token);
    
     const data = await User.create({
       name,
@@ -88,6 +89,7 @@ async function loginUser(req, res) {
         const token = createJwt(data._id.toString(),"doctor");
         res.json({
           success: true,
+          name:data.name,
           data: { token: token, msg: "Login Successfully !!!" },
         });
 
@@ -120,7 +122,7 @@ const verifyEmailToken = async (req, res) => {
     }
     user.verified = true;
     user.verifyToken = undefined;
-    await user.save(); // Save the updated user record
+    await user.save(); 
     console.log(user);
     res.status(200).json({
       success: true,
@@ -135,18 +137,26 @@ const verifyEmailToken = async (req, res) => {
 };
 async function verifyForgotPasswordToken(req, res) {
   try {
-    const { token, password } = req.body;
-    console.log(req.body);
+    const { email, password } = req.body;
     const hashedpassword = await hashPassword(password);
-    const data = await User.findOne({ verifyToken: token });
+    console.log(email);
+    
+    const data = await User.findOne({ email: email});
+    console.log("User data found:", data);
+
+    if (!data) {
+      return res.status(404).send("User not found or invalid token.");
+    }
+    console.log(data);
+    
     if (data) {
-      console.log(data.password);
-      console.log(hashedpassword);
+      // console.log(data.password);
+      // console.log(hashedpassword);
       data.verifyToken = undefined;
       data.verified = true;
       data.password = hashedpassword;
       data.save();
-      res.json({
+      res.status(200).json({
         success: true,
         data: { msg: "password updated successfully" },
       });
@@ -160,16 +170,12 @@ async function forgotPassword(req, res) {
   try {
     const email = req.body.email;
     console.log(email);
-    const user = await User.findOne({ email: email });
-    console.log(user);
-    
-    
+    const user = await User.findOne({ email: email });    
     if (user) {
       const token = generateVerificationToken();
       user.verifyToken = token;
-      console.log(token);
-      user.save();
-      const verificationLink = `http://localhost:3000/auth/reset-password/${token}${type='Doctor'}`;
+      await user.save();
+      const verificationLink = `http://localhost:3000/auth/reset-password/${email}?type=Doctor`;
       const mailoptions = {
         to: user.email,
         subject: "Reset password",

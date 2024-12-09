@@ -15,12 +15,14 @@ export default function CreateAppointmentForm() {
     setLoading(true);
     setError('');
     setSuccess(false);
-
+    
     try {
     const token:any=localStorage.getItem("token");
+    const patientname=localStorage.getItem('patientname');
      axiosFetchPatient(token).post("/create-appointment",{
         problem,
-        time
+        time,
+        patientname
      }).then((res)=>{
         setSuccess(true);
         setProblem("");

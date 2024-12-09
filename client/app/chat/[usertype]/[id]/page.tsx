@@ -23,8 +23,6 @@ function Page(props: any) {
   const fetchChat = useCallback(async () => {
     try {
       const { data } = await axiosFetch(`/get-appointment-chats/${appointmentId}`);
-      
-      // Only update if there are new messages
       if (JSON.stringify(data) !== JSON.stringify(chats)) {
         setChats(data);
       }
@@ -46,7 +44,6 @@ function Page(props: any) {
     let intervalId: NodeJS.Timeout;
 
     try {
-      // Establish WebSocket connection
       ws = new WebSocket(`ws://localhost:8080/ws-chat/${appointmentId}`);
 
       ws.onopen = () => {
@@ -63,11 +60,8 @@ function Page(props: any) {
       };
 
       setSocket(ws);
-
-      // Start periodic chat fetching
       intervalId = setInterval(fetchChat, 1500);
 
-      // Cleanup
       return () => {
         ws.close();
         clearInterval(intervalId);
@@ -78,15 +72,10 @@ function Page(props: any) {
     }
   }, [appointmentId, fetchChat]);
 
-  // Send message handler
   const handleSendMessage = () => {
     if (!message.trim() || !socket || socket.readyState !== WebSocket.OPEN) return;
 
-    const newMessage = {
-      userType: userType,
-      msg: message
-    };
-
+    const newMessage = { userType, msg: message };
     try {
       socket.send(JSON.stringify(newMessage));
       setChats(prevChats => [...prevChats, newMessage]);
@@ -96,7 +85,6 @@ function Page(props: any) {
     }
   };
 
-  // Handle Enter key for sending messages
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleSendMessage();
@@ -104,12 +92,12 @@ function Page(props: any) {
   };
 
   return (
-    <div className="flex flex-col h-screen max-w-xl mx-auto bg-gray-100">
+    <div className="flex flex-col h-screen max-w-xl mx-auto bg-gray-50 shadow-lg rounded-lg">
       {/* Connection Status Bar */}
-      {/* <div className={`
-        flex items-center justify-center p-2 text-sm font-medium
-        ${connectionStatus === 'connected' ? 'bg-green-100 text-green-800' : 
-          connectionStatus === 'disconnected' ? 'bg-red-100 text-red-800' : 
+      <div className={`
+        flex items-center justify-center p-3 text-sm font-medium
+        ${connectionStatus === 'connected' ? 'bg-green-100 text-green-800' :
+          connectionStatus === 'disconnected' ? 'bg-red-100 text-red-800' :
           'bg-yellow-100 text-yellow-800'}
       `}>
         {connectionStatus === 'connected' ? (
@@ -119,35 +107,36 @@ function Page(props: any) {
         ) : (
           <><PlugZap className="mr-2 w-4 h-4" /> Connecting...</>
         )}
-      </div> */}
+      </div>
 
       {/* Chat Messages Container */}
       <div 
         ref={chatContainerRef}
-        className="flex-grow overflow-y-auto p-4 space-y-3"
+        className="flex-grow overflow-y-auto p-4 space-y-3 bg-white rounded-t-lg"
       >
         {chats.length === 0 ? (
-          <div className="text-center text-gray-500">No messages yet</div>
+          <div className="text-center text-gray-500 italic">No messages yet...</div>
         ) : (
           chats.map((chat, index) => (
             <div 
               key={chat._id || index} 
-              className={`
-                max-w-[80%] p-3 rounded-lg 
-                ${chat.userType === userType 
-                  ? 'bg-blue-500 text-white self-end ml-auto' 
-                  : 'bg-gray-200 text-black self-start mr-auto'}
-              `}
+              className={`flex ${chat.userType === userType ? 'justify-end' : 'justify-start'}`}
             >
-              <div className="font-semibold text-sm mb-1">{chat.userType}</div>
-              <div>{chat.msg}</div>
+              <div 
+                className={`max-w-[80%] p-3 rounded-lg shadow
+                  ${chat.userType === userType ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}
+                `}
+              >
+                <div className="font-semibold text-xs opacity-80 mb-1">{chat.userType}</div>
+                <div className="text-sm">{chat.msg}</div>
+              </div>
             </div>
           ))
         )}
       </div>
 
       {/* Message Input Area */}
-      <div className="bg-white p-4 border-t flex items-center space-x-2">
+      <div className="bg-gray-100 p-4 border-t flex items-center space-x-3 rounded-b-lg">
         <input 
           type="text"
           value={message}
@@ -156,7 +145,7 @@ function Page(props: any) {
           placeholder="Type a message..."
           disabled={connectionStatus !== 'connected'}
           className="
-            flex-grow p-2 border rounded-lg 
+            flex-grow p-2 border rounded-lg bg-white shadow-sm
             focus:outline-none focus:ring-2 focus:ring-blue-500
             disabled:opacity-50 disabled:cursor-not-allowed
           "
@@ -165,8 +154,8 @@ function Page(props: any) {
           onClick={handleSendMessage}
           disabled={!message.trim() || connectionStatus !== 'connected'}
           className="
-            bg-blue-500 text-white p-2 rounded-full 
-            hover:bg-blue-600 transition-colors
+            bg-blue-500 text-white p-3 rounded-full 
+            hover:bg-blue-600 transition-colors shadow
             disabled:opacity-50 disabled:cursor-not-allowed
           "
         >

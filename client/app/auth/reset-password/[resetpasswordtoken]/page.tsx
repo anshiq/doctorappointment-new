@@ -5,19 +5,39 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 const VerifyToken = (params: any) => {
     const [password, setPassword] = useState("");
-    const [retypepassword, setRetypePassword] = useState('')
-    const token = params.resetpasswordtoken;
-    const navigate=useRouter();
-    const handleSubmit = async(e:any) => {
+    const [retypepassword, setRetypePassword] = useState('');
+    const [email, setemail] = useState<string | null>(null);
+    
+   const navigate=useRouter();
+    useEffect(() => {
+        // Get the full URL path
+        const pathname = window.location.pathname;
+        console.log("Pathname:", pathname);
+    
+        // Split the pathname by "/"
+        const parts = pathname.split("/");
+        console.log("URL Parts:", parts);
+    
+        // Extract the token (assuming the token is the 3rd segment)
+        setemail(parts[3]?.split("Doctor")[0]);
+      }, []);
+
+      const handleSubmit = async(e:any) => {
         e.preventDefault();
         if (password !== retypepassword) {
             alert("passwrd don't match")
             return;
         }
-        await axiosFetch.post("/doctor-auth/verify-forgot-password-token").then(()=>{
-            alert("Password has been updated Succesfully");
-            navigate.push("/");
-        })
+        console.log("Extracted mail:", email);
+        
+        const res:any=await axiosFetch.post(
+            "/doctor-auth/verify-forgot-password-token",
+            { email:email, password:password },
+            { headers: { "Content-Type": "application/json" } }
+          );
+          if(res.status==200){
+            navigate.push("/auth");
+          }
     }
     return <>
         <div className="min-h-screen bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center p-4">
@@ -43,7 +63,7 @@ const VerifyToken = (params: any) => {
                             onChange={(e) => setRetypePassword(e.target.value)}
                         />
                     </div>
-                    <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">Sent Reset Password Email</button>
+                    <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">Reset Password </button>
 
                 </form>
             </div>
