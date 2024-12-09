@@ -41,7 +41,7 @@ export default function Home() {
             Sign Up
           </button>
         </div>
-        <div className="flex items-center justify-center m-2"><Link href={"/auth/reset-password"}>Forgot Password ??</Link></div>
+        <div className="flex items-center justify-center m-2"><Link href={`/auth/reset-password?type=${formType}`}>Forgot Password ??</Link></div>
         <div className="h-[18rem] overflow-y-auto kit-web pr-4">
         {formType === "patient" && action === "login" && <PatientLogin />}
           {formType === "patient" && action === "signup" && <PatientSignup />}
