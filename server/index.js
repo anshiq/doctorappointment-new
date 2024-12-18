@@ -27,7 +27,7 @@ app.use('/ws-chat',wsRouter)
 app.get('/get-token-type',getTokenType)
 const start = async () => {
   try {
-    const db_url ="mongodb+srv://appuravjaat370:Appuravnehra123@nodeproject.ejkzvbv.mongodb.net/?retryWrites=true&w=majority&appName=Nodeproject";
+    const db_url ="mongodb+srv://solvesathi:solvesathi12@solvesathicluster0.ca3gi.mongodb.net/?retryWrites=true&w=majority&appName=SolveSathiCluster0";
     const port = process.env.PORT || 8080;
     connect(db_url);
     app.listen(port, () =>
